@@ -32,10 +32,9 @@ header {
   font-size: 20px;
   font-weight: 600;
 }
-header darkmode { 
-display: flex;
-justify-content: space-between;
-align-items: center;
+body.dark-mode header {
+ background: #2c2f38;
+ color:#f3f4f6;
 }
 
 #dark-mode-toggle {
@@ -43,6 +42,7 @@ align-items: center;
   border: none;
   font-size: 20px;
   cursor: pointer;
+  color: white;
 }
 
 .layout {
