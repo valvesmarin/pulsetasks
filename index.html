@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TaskFlow</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -24,27 +25,51 @@
 
     <main>
       <section class="task-list">
+        
+        <!-- Tarefa 1 -->
         <div class="task">
-          <span class="title">Diseñar landing</span>
-          <span class="category">Trabajo</span>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <span class="title">Diseñar landing</span>
+            <span class="category">Trabajo</span>
+          </div>
           <span class="badge high">Alta</span>
         </div>
 
+        <!-- Tarefa 2 -->
         <div class="task">
-          <span class="title">Leer documentación</span>
-          <span class="category">Estudio</span>
+          <input type="checkbox" class="task-check">
+          <div class="task-content">
+            <span class="title">Leer documentación</span>
+            <span class="category">Estudio</span>
+          </div>
           <span class="badge medium">Media</span>
         </div>
+
       </section>
     </main>
   </div> 
 
   <script>
     const toggle = document.getElementById("dark-mode-toggle");
+    
     toggle.addEventListener("click", function() {
       document.body.classList.toggle("dark-mode");
+      
+      if (document.body.classList.contains("dark-mode")) {
+        toggle.textContent = "Modo Claro";
+      } else {
+        toggle.textContent = "Modo Oscuro";
+      }
     });
-  </script>   
+
+    /* marcar como concluída */
+    document.querySelectorAll('.task-check').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        this.closest('.task').classList.toggle('completed', this.checked);
+      });
+    });
+  </script>
 
 </body>
 </html>

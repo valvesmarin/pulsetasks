@@ -1,25 +1,27 @@
+/*Variáveis Globais*/
 :root {
   --primary: #7f9cf5;      
-  --primary-dark: #667eea;
   --bg: #f0f4f8;           
-  --card: #ffffff;          
-  --text: #1f2937;        
-  --muted: #4a5568;         
+  --card: #ffffff;         
+  --text: #1f2937;          
+  --muted: #4a5568;        
 
   --high: #f56565;          
-  --medium: #f6ad55;        
+  --medium: #f6ad55;       
   --low: #48bb78;           
 
-  --radius: 12px;           
-  --spacing: 20px;              
+  --radius: 12px;          
+  --spacing: 20px;          
   --font-main: 'Segoe UI', sans-serif;
 }
 
+/*Corpo e Layout Base*/
 body {
   margin: 0;
   font-family: var(--font-main);
   background: var(--bg);
   color: var(--text);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 header {
@@ -31,10 +33,6 @@ header {
   padding: var(--spacing);
   font-size: 20px;
   font-weight: 600;
-}
-body.dark-mode header {
- background: #2c2f38;
- color:#f3f4f6;
 }
 
 #dark-mode-toggle {
@@ -82,16 +80,17 @@ main {
   padding: var(--spacing);
 }
 
+/*CARTÕES DE TAREFAS */
 .task {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 12px;
   background: var(--card);
   padding: 16px;
   margin-bottom: 15px;
   border-radius: var(--radius);
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  transition: 0.3s ease;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .task:hover {
@@ -99,8 +98,20 @@ main {
   box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
+.task-check {
+  accent-color: var(--primary);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.task-content {
+  flex: 1;
+}
+
 .title {
   font-weight: 500;
+  display: block;
 }
 
 .category {
@@ -116,19 +127,44 @@ main {
   color: white;
 }
 
-.badge.high {
-  background: var(--high);
+.badge.high { background: var(--high); }
+.badge.medium { background: var(--medium); }
+.badge.low { background: var(--low); }
+
+/*Estado concluído com transição suave */
+.task.completed {
+  opacity: 0.85;
+  transform: scale(0.97);
 }
 
-.badge.medium {
-  background: var(--medium);
+.task.completed .title {
+  text-decoration: line-through;
+  color: var(--muted);
 }
 
-.badge.low {
-  background: var(--low);
+/*Dark Mode*/
+body.dark-mode {
+  background: #1f2024;      
+  color: #e5e7eb;         
 }
 
-/* Responsive */
+body.dark-mode header {
+  background: #2c2f38;
+}
+
+body.dark-mode aside,
+body.dark-mode main,
+body.dark-mode .task {
+  background: #3a3c44;
+  color: #e5e7eb;
+}
+
+body.dark-mode .category,
+body.dark-mode .task.completed .title {
+  color: #9ca3af;
+}
+
+/*Responsividade*/
 @media (max-width: 768px) {
   .layout {
     flex-direction: column;
@@ -137,37 +173,10 @@ main {
   aside {
     width: 100%;
     box-shadow: none;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--muted);
   }
 
   .task {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    flex-direction: row;
   }
-
-  body.dark-mode {
-    background: #f2024f;
-    color: #e5e7eb;
-  }
-    body.dark-mode header {
-      background: #2c2f38;
-      color: #f3f4f6;
-    }
-
-    body.dark-mode aside {
-      background: #3a3c44;
-      color:#e5e7eb
-    }
-
-      body.dark-mode .task {
-          background: #3a3c44;  
-          color: #e5e7eb;
-
-        }
-        
-        body.dark-mode .badge.high { background: #f56565; } 
-        body.dark-mode .badge.medium { background: #f6ad55; }
-        body.dark-mode .badge.low { background: #48bb78; } 
-    
 }
