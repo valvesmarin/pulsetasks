@@ -143,7 +143,7 @@ main {
   color: var(--muted);
 }
 
-/* NOVO: Formulário de adicionar tarefa*/
+/*Formulário de adicionar tarefa*/
 #task-form {
   display: flex;
   gap: 10px;
@@ -243,6 +243,7 @@ body.dark-mode #search-input {
 }
 
 /*Responsividade*/
+
 @media (max-width: 768px) {
   .layout {
     flex-direction: column;
