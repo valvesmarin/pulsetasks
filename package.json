@@ -4,7 +4,7 @@
   "description": "PulseTasks - App de tarefas",
   "main": "index.js",
   "scripts": {
-    "build": "chmod +x ./node_modules/.bin/tailwindcss && npx @tailwindcss/cli -i ./input.css -o ./styles.css --minify"
+    "build": "npx @tailwindcss/cli -i ./input.css -o ./styles.css --minify"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.1",
