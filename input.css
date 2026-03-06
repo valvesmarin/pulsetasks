@@ -1,3 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@layer components {
+  .task-card {
+    @apply flex items-center gap-4 p-6 rounded-3xl border shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  }
+  .badge {
+    @apply px-5 py-1.5 text-xs font-semibold rounded-2xl transition-all;
+  }
+}
