@@ -1,7 +1,6 @@
 {
   "name": "pulsetasks",
   "version": "1.0.0",
-  "description": "PulseTasks - App de tareas",
   "scripts": {
     "build": "npx @tailwindcss/cli -i ./input.css -o ./output.css --minify",
     "dev": "npx @tailwindcss/cli -i ./input.css -o ./output.css --watch"
