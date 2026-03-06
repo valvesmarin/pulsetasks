@@ -2,13 +2,11 @@
   "name": "pulsetasks",
   "private": true,
   "version": "1.0.0",
-  "description": "PulseTasks - Gerenciador de tarefas com Tailwind CSS v4",
   "scripts": {
     "build": "npx @tailwindcss/cli -i ./input.css -o ./output.css --minify",
-    "watch": "npx @tailwindcss/cli -i ./input.css -o ./output.css --watch",
-    "dev": "npm run watch"
+    "dev": "npx @tailwindcss/cli -i ./input.css -o ./output.css --watch"
   },
   "devDependencies": {
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.0.0-alpha.20"
   }
 }
