@@ -88,11 +88,35 @@ document.getElementById('task-form').addEventListener('submit', e => {
 // Busca
 document.getElementById('search-input').addEventListener('input', e => renderTasks(e.target.value));
 
-// Modo Escuro
+// Modo Escuro – versão corrigida e persistente
 const toggleBtn = document.getElementById('dark-mode-toggle');
+
+// Função para atualizar botão e classe
+function updateTheme(isDark) {
+  if (isDark) {
+    document.documentElement.classList.add('dark');
+    toggleBtn.textContent = '☀️ Claro';  // ou 'Modo Claro'
+  } else {
+    document.documentElement.classList.remove('dark');
+    toggleBtn.textContent = '🌙 Escuro'; // ou 'Modo Escuro'
+  }
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+}
+
+// Carrega preferência salva ou do sistema na inicialização
+const savedTheme = localStorage.getItem('theme');
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (savedTheme) {
+  updateTheme(savedTheme === 'dark');
+} else {
+  updateTheme(prefersDark);
+}
+
+// Evento do botão
 toggleBtn.addEventListener('click', () => {
-  document.documentElement.classList.toggle('dark');
-  toggleBtn.textContent = document.documentElement.classList.contains('dark') ? '☀️ Claro' : '🌙 Escuro';
+  const isCurrentlyDark = document.documentElement.classList.contains('dark');
+  updateTheme(!isCurrentlyDark);
 });
 
 loadTasks();
