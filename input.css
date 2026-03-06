@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @layer base {
-  html {
+  :root {
     @apply bg-white text-zinc-900;
   }
   .dark {
@@ -11,12 +11,7 @@
 
 @layer components {
   .task-card {
-    @apply flex items-center gap-4 p-5 rounded-3xl border shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.02];
+    @apply transition-all duration-300 hover:shadow-xl hover:scale-[1.02];
   }
-  .badge {
-    @apply px-4 py-1 text-sm font-medium rounded-full transition-colors;
-  }
-  button:focus {
-    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
-  }
+  
 }
