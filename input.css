@@ -1,17 +1,14 @@
 @import "tailwindcss";
 
 @layer base {
-  :root {
-    @apply bg-white text-zinc-900;
-  }
-  .dark {
-    @apply bg-zinc-950 text-zinc-100;
-  }
+  body { @apply bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100; }
 }
 
 @layer components {
   .task-card {
-    @apply transition-all duration-300 hover:shadow-xl hover:scale-[1.02];
+    @apply transition-all duration-300 hover:shadow-2xl hover:-translate-y-1;
   }
-  
+  .badge {
+    @apply transition-colors;
+  }
 }
