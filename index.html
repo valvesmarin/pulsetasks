@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="es" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PulseTasks • Gerenciador de Tarefas</title>
+  <title>PulseTasks • Gestor de Tareas</title>
   <link rel="icon" href="data:," />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="output.css" />
@@ -20,34 +20,34 @@
 
       <button id="theme-toggle" class="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-sm font-medium">
         <span id="theme-icon">🌙</span>
-        <span id="theme-text">Escuro</span>
+        <span id="theme-text">Modo Oscuro</span>
       </button>
     </div>
   </header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <!-- Estatísticas -->
+    <!-- Estadísticas -->
     <div id="stats" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10"></div>
 
-    <!-- Form + Filtros -->
+    <!-- Formulario + Filtros -->
     <div class="flex flex-col lg:flex-row gap-4 mb-8">
       <form id="task-form" class="flex-1 flex flex-col sm:flex-row gap-3">
-        <input id="task-input" type="text" placeholder="O que precisa ser feito?" required
+        <input id="task-input" type="text" placeholder="¿Qué necesitas hacer hoy?" required
                class="flex-1 px-5 py-4 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition"/>
         <select id="category-select" class="px-5 py-4 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl">
-          <option value="Trabalho">Trabalho</option>
-          <option value="Pessoal">Pessoal</option>
-          <option value="Estudo">Estudo</option>
-          <option value="Saúde">Saúde</option>
-          <option value="Outros">Outros</option>
+          <option value="Trabajo">Trabajo</option>
+          <option value="Personal">Personal</option>
+          <option value="Estudio">Estudio</option>
+          <option value="Salud">Salud</option>
+          <option value="Otros">Otros</option>
         </select>
         <select id="priority-select" class="px-5 py-4 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl">
           <option value="high">Alta</option>
-          <option value="medium">Média</option>
-          <option value="low">Baixa</option>
+          <option value="medium">Media</option>
+          <option value="low">Baja</option>
         </select>
         <button type="submit" class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg transition active:scale-95">
-          Adicionar
+          Añadir
         </button>
       </form>
     </div>
@@ -55,56 +55,56 @@
     <!-- Filtros -->
     <div class="flex flex-wrap gap-4 mb-8">
       <select id="filter-priority" class="px-5 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl">
-        <option value="">Todas prioridades</option>
+        <option value="">Todas las prioridades</option>
         <option value="high">Alta</option>
-        <option value="medium">Média</option>
-        <option value="low">Baixa</option>
+        <option value="medium">Media</option>
+        <option value="low">Baja</option>
       </select>
       <select id="filter-category" class="px-5 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl">
-        <option value="">Todas categorias</option>
+        <option value="">Todas las categorías</option>
       </select>
       <select id="sort-select" class="px-5 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl">
-        <option value="newest">Mais recentes</option>
-        <option value="oldest">Mais antigas</option>
-        <option value="priority">Prioridade</option>
-        <option value="title">Alfabética</option>
+        <option value="newest">Más recientes</option>
+        <option value="oldest">Más antiguas</option>
+        <option value="priority">Prioridad</option>
+        <option value="title">Alfabético</option>
       </select>
       <button id="clear-completed" class="px-5 py-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-xl hover:bg-red-200 dark:hover:bg-red-900/50 transition">
-        Limpar concluídas
+        Limpiar completadas
       </button>
     </div>
 
-    <!-- Lista de tarefas -->
+    <!-- Lista de tareas -->
     <div id="task-list" class="space-y-4 min-h-[400px]"></div>
 
-    <!-- Empty state -->
+    <!-- Estado vacío -->
     <div id="empty-state" class="hidden text-center py-20">
       <p class="text-7xl mb-6">📭</p>
-      <h2 class="text-2xl font-semibold text-zinc-400 dark:text-zinc-600">Nenhuma tarefa ainda</h2>
-      <p class="text-zinc-500 dark:text-zinc-600 mt-2">Adicione sua primeira tarefa acima!</p>
+      <h2 class="text-2xl font-semibold text-zinc-400 dark:text-zinc-600">Aún no hay tareas</h2>
+      <p class="text-zinc-500 dark:text-zinc-600 mt-2">¡Añade tu primera tarea arriba!</p>
     </div>
   </main>
 
-  <!-- Modal de edição -->
+  <!-- Modal de edición -->
   <div id="edit-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
     <div class="modal-content bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
       <div class="p-6 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center">
-        <h2 class="text-xl font-semibold">Editar Tarefa</h2>
+        <h2 class="text-xl font-semibold">Editar Tarea</h2>
         <button id="close-modal" class="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 text-2xl">×</button>
       </div>
       <form id="edit-form" class="p-6 space-y-5">
         <input id="edit-title" type="text" required class="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
         <select id="edit-category" class="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl">
-          <!-- preenchido dinamicamente -->
+          <!-- llenado dinámicamente -->
         </select>
         <select id="edit-priority" class="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl">
           <option value="high">Alta</option>
-          <option value="medium">Média</option>
-          <option value="low">Baixa</option>
+          <option value="medium">Media</option>
+          <option value="low">Baja</option>
         </select>
         <div class="flex justify-end gap-3">
           <button type="button" id="cancel-edit" class="px-6 py-3 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-xl transition">Cancelar</button>
-          <button type="submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition">Salvar</button>
+          <button type="submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition">Guardar</button>
         </div>
       </form>
     </div>
