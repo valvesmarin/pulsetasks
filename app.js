@@ -1,19 +1,35 @@
 let tasks = [];
-let currentFilter = { priority: '', sort: 'newest', search: '' };
-let draggedElement = null;
+let currentTaskId = null;
+let filter = { priority: '', category: '', sort: 'newest' };
 
-/** @type {Object<string, {badge: string, card: string}>} */
+// ================================================
+// CONFIGURAÇÕES E ESTILOS
+// ================================================
+
 const priorityStyles = {
-  high:   { badge: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', card: 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800' },
-  medium: { badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', card: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800' },
-  low:    { badge: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', card: 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800' }
+  high:   { badge: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', card: 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800' },
+  medium: { badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', card: 'bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800' },
+  low:    { badge: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', card: 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800' }
 };
 
-/** Carrega tarefas do localStorage */
-function loadTasks() {
-  const saved = localStorage.getItem('tasks');
-  tasks = saved ? JSON.parse(saved) : [];
+/** Carrega tarefas e tema do localStorage */
+function init() {
+  const savedTasks = localStorage.getItem('tasks');
+  tasks = savedTasks ? JSON.parse(savedTasks) : [];
+
+  const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+  updateThemeButton(savedTheme === 'dark');
+
   renderTasks();
+  populateCategories();
+  updateStats();
+}
+
+/** Atualiza botão de tema */
+function updateThemeButton(isDark) {
+  document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
+  document.getElementById('theme-text').textContent = isDark ? 'Claro' : 'Escuro';
 }
 
 /** Salva tarefas */
@@ -21,83 +37,243 @@ function saveTasks() {
   localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-/** Renderiza estatísticas */
-function renderStats() {
+/** Atualiza estatísticas */
+function updateStats() {
   const total = tasks.length;
   const completed = tasks.filter(t => t.completed).length;
   const pending = total - completed;
 
   document.getElementById('stats').innerHTML = `
-    <div class="bg-white dark:bg-zinc-900 rounded-3xl px-6 py-4 flex-1">
-      Total: <strong>${total}</strong>
+    <div class="stat-card">
+      <p class="text-sm text-zinc-500 dark:text-zinc-400">Total</p>
+      <p class="text-3xl font-bold">${total}</p>
     </div>
-    <div class="bg-white dark:bg-zinc-900 rounded-3xl px-6 py-4 flex-1">
-      Concluídas: <strong class="text-green-600">${completed}</strong>
+    <div class="stat-card">
+      <p class="text-sm text-green-600 dark:text-green-400">Concluídas</p>
+      <p class="text-3xl font-bold">${completed}</p>
     </div>
-    <div class="bg-white dark:bg-zinc-900 rounded-3xl px-6 py-4 flex-1">
-      Pendentes: <strong class="text-amber-600">${pending}</strong>
+    <div class="stat-card">
+      <p class="text-sm text-amber-600 dark:text-amber-400">Pendentes</p>
+      <p class="text-3xl font-bold">${pending}</p>
     </div>
   `;
 }
 
-/** Cria elemento de tarefa (com drag & drop) */
+/** Preenche select de categorias */
+function populateCategories() {
+  const select = document.getElementById('filter-category');
+  const categories = [...new Set(tasks.map(t => t.category))];
+  select.innerHTML = '<option value="">Todas categorias</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+/** Cria elemento de tarefa */
 function createTaskElement(task) {
   const div = document.createElement('div');
   const prio = priorityStyles[task.priority] || priorityStyles.low;
 
-  div.className = `task-card flex items-center gap-5 p-6 rounded-3xl border shadow-sm cursor-grab active:cursor-grabbing ${prio.card}`;
+  div.className = `task-card ${prio.card} ${task.completed ? 'opacity-60' : ''}`;
   div.draggable = true;
   div.dataset.id = task.id;
 
-  // ... (HTML completo da tarefa com botão editar)
+  div.innerHTML = `
+    <input type="checkbox" ${task.completed ? 'checked' : ''} class="w-5 h-5 accent-indigo-600 cursor-pointer" />
+    <div class="flex-1">
+      <p class="text-lg font-medium ${task.completed ? 'line-through text-zinc-500' : ''}">${task.title}</p>
+      <p class="text-sm text-zinc-500 dark:text-zinc-400">${task.category}</p>
+    </div>
+    <span class="badge ${prio.badge}">${task.priority === 'high' ? 'Alta' : task.priority === 'medium' ? 'Média' : 'Baixa'}</span>
+    <button class="edit-btn text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 px-3 py-2" aria-label="Editar tarefa">✏️</button>
+    <button class="delete-btn text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 px-3 py-2" aria-label="Excluir tarefa">🗑️</button>
+  `;
 
-  // Eventos de drag
+  // Eventos
+  div.querySelector('input[type="checkbox"]').addEventListener('change', () => toggleComplete(task.id));
+  div.querySelector('.edit-btn').addEventListener('click', () => openEditModal(task));
+  div.querySelector('.delete-btn').addEventListener('click', () => deleteTask(task.id));
+
+  // Drag & Drop
   div.addEventListener('dragstart', e => {
-    draggedElement = div;
-    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', task.id);
+    div.classList.add('opacity-50');
   });
 
-  // ... (outros eventos)
+  div.addEventListener('dragend', () => div.classList.remove('opacity-50'));
+
+  div.addEventListener('dragover', e => e.preventDefault());
+
+  div.addEventListener('drop', e => {
+    e.preventDefault();
+    const draggedId = e.dataTransfer.getData('text/plain');
+    if (draggedId !== task.id) reorderTasks(draggedId, task.id);
+  });
 
   return div;
 }
 
-/** Renderiza lista com filtros e ordenação */
+/** Reordena tarefas com drag & drop */
+function reorderTasks(draggedId, targetId) {
+  const draggedIndex = tasks.findIndex(t => t.id == draggedId);
+  const targetIndex = tasks.findIndex(t => t.id == targetId);
+
+  if (draggedIndex === -1 || targetIndex === -1) return;
+
+  const [draggedTask] = tasks.splice(draggedIndex, 1);
+  tasks.splice(targetIndex, 0, draggedTask);
+
+  saveTasks();
+  renderTasks();
+}
+
+/** Renderiza lista de tarefas */
 function renderTasks() {
   const container = document.getElementById('task-list');
+  const empty = document.getElementById('empty-state');
   container.innerHTML = '';
 
   let filtered = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(currentFilter.search);
-    const matchesPriority = !currentFilter.priority || task.priority === currentFilter.priority;
-    return matchesSearch && matchesPriority;
+    const matchPriority = !filter.priority || task.priority === filter.priority;
+    const matchCategory = !filter.category || task.category === filter.category;
+    return matchPriority && matchCategory;
   });
 
   // Ordenação
-  filtered = sortTasks(filtered);
+  filtered = filtered.sort((a, b) => {
+    if (filter.sort === 'newest') return b.id - a.id;
+    if (filter.sort === 'oldest') return a.id - b.id;
+    if (filter.sort === 'priority') {
+      const order = { high: 0, medium: 1, low: 2 };
+      return order[a.priority] - order[b.priority];
+    }
+    if (filter.sort === 'title') return a.title.localeCompare(b.title);
+    return 0;
+  });
 
-  filtered.forEach(task => container.appendChild(createTaskElement(task)));
-  renderStats();
+  if (filtered.length === 0) {
+    empty.classList.remove('hidden');
+  } else {
+    empty.classList.add('hidden');
+    filtered.forEach(task => container.appendChild(createTaskElement(task)));
+  }
+
+  updateStats();
 }
 
-/** Modal de edição (senior level) */
+/** Adiciona nova tarefa */
+document.getElementById('task-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const title = document.getElementById('task-input').value.trim();
+  if (!title) return showToast('Digite uma tarefa', 'error');
+
+  const newTask = {
+    id: Date.now(),
+    title,
+    category: document.getElementById('category-select').value,
+    priority: document.getElementById('priority-select').value,
+    completed: false
+  };
+
+  tasks.unshift(newTask);
+  saveTasks();
+  renderTasks();
+  e.target.reset();
+  showToast('Tarefa adicionada com sucesso!', 'success');
+  populateCategories();
+});
+
+/** Marca/desmarca concluída */
+function toggleComplete(id) {
+  const task = tasks.find(t => t.id === id);
+  if (task) {
+    task.completed = !task.completed;
+    saveTasks();
+    renderTasks();
+  }
+}
+
+/** Abre modal de edição */
 function openEditModal(task) {
-  // Cria modal dinamicamente com inputs preenchidos
-  // Salva alterações com validação
+  currentTaskId = task.id;
+  document.getElementById('edit-title').value = task.title;
+  document.getElementById('edit-category').value = task.category;
+  document.getElementById('edit-priority').value = task.priority;
+  document.getElementById('edit-modal').classList.remove('hidden');
 }
 
-/** Toast system */
+/** Salva edição */
+document.getElementById('edit-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const task = tasks.find(t => t.id === currentTaskId);
+  if (task) {
+    task.title = document.getElementById('edit-title').value.trim();
+    task.category = document.getElementById('edit-category').value;
+    task.priority = document.getElementById('edit-priority').value;
+    saveTasks();
+    renderTasks();
+    closeModal();
+    showToast('Tarefa atualizada!', 'success');
+  }
+});
+
+/** Fecha modal */
+function closeModal() {
+  document.getElementById('edit-modal').classList.add('hidden');
+  currentTaskId = null;
+}
+
+document.getElementById('close-modal').addEventListener('click', closeModal);
+document.getElementById('cancel-edit').addEventListener('click', closeModal);
+
+/** Deleta tarefa */
+function deleteTask(id) {
+  if (!confirm('Deseja realmente excluir esta tarefa?')) return;
+  tasks = tasks.filter(t => t.id !== id);
+  saveTasks();
+  renderTasks();
+  showToast('Tarefa excluída', 'success');
+  populateCategories();
+}
+
+/** Limpa concluídas */
+document.getElementById('clear-completed').addEventListener('click', () => {
+  if (!confirm('Limpar todas as tarefas concluídas?')) return;
+  tasks = tasks.filter(t => !t.completed);
+  saveTasks();
+  renderTasks();
+  showToast('Tarefas concluídas removidas', 'success');
+});
+
+/** Toast */
 function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
   toast.textContent = message;
-  toast.className = `fixed bottom-6 right-6 px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 ${type === 'error' ? 'bg-red-600' : 'bg-emerald-600'}`;
-  toast.classList.remove('hidden');
-  setTimeout(() => toast.classList.add('hidden'), 3000);
+  toast.className = `toast ${type === 'success' ? 'bg-green-600' : 'bg-red-600'} translate-y-0 opacity-100`;
+  setTimeout(() => {
+    toast.className = `toast hidden`;
+  }, 3000);
 }
 
-// === EVENTOS (form, filtros, modal, drag & drop, dark mode) ===
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadTasks();
-  // Todos os listeners aqui
+/** Tema */
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const isDark = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  updateThemeButton(isDark);
 });
+
+/** Filtros */
+document.getElementById('filter-priority').addEventListener('change', e => {
+  filter.priority = e.target.value;
+  renderTasks();
+});
+
+document.getElementById('filter-category').addEventListener('change', e => {
+  filter.category = e.target.value;
+  renderTasks();
+});
+
+document.getElementById('sort-select').addEventListener('change', e => {
+  filter.sort = e.target.value;
+  renderTasks();
+});
+
+/** Iniciar */
+init();

@@ -1,71 +1,118 @@
 <!DOCTYPE html>
-<html lang="pt" class="dark">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PulseTasks</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="output.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PulseTasks • Gerenciador de Tarefas</title>
+  <link rel="icon" href="data:," />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="output.css" />
 </head>
-<body class="bg-zinc-50 dark:bg-zinc-950 min-h-screen font-sans">
+<body class="bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen font-inter antialiased">
 
   <!-- Header -->
-  <header class="bg-white dark:bg-zinc-900 border-b sticky top-0 z-50 shadow-sm">
-    <div class="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
-      <div class="flex items-center gap-4">
-        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center text-white text-3xl font-bold">P</div>
-        <h1 class="text-4xl font-bold tracking-tighter">PulseTasks</h1>
+  <header class="sticky top-0 z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">P</div>
+        <h1 class="text-2xl font-semibold tracking-tight">PulseTasks</h1>
       </div>
-      <button id="dark-mode-toggle" class="flex items-center gap-3 px-6 py-3 bg-zinc-100 dark:bg-zinc-800 rounded-3xl hover:bg-zinc-200 transition-all">
+
+      <button id="theme-toggle" class="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-sm font-medium">
         <span id="theme-icon">🌙</span>
-        <span id="theme-text">Modo Escuro</span>
+        <span id="theme-text">Escuro</span>
       </button>
     </div>
   </header>
 
-  <div class="max-w-6xl mx-auto px-6 py-10">
-    <!-- Stats -->
-    <div id="stats" class="flex gap-6 mb-8 text-sm"></div>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Estatísticas -->
+    <div id="stats" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10"></div>
 
     <!-- Form + Filtros -->
     <div class="flex flex-col lg:flex-row gap-4 mb-8">
-      <form id="task-form" class="flex-1 flex gap-4">
-        <!-- input, selects, botão -->
-      </form>
-      
-      <div class="flex gap-4">
-        <select id="filter-priority" class="px-6 py-3 bg-white dark:bg-zinc-900 border rounded-3xl">
-          <option value="">Todas prioridades</option>
+      <form id="task-form" class="flex-1 flex flex-col sm:flex-row gap-3">
+        <input id="task-input" type="text" placeholder="O que precisa ser feito?" required
+               class="flex-1 px-5 py-4 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition"/>
+        <select id="category-select" class="px-5 py-4 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl">
+          <option value="Trabalho">Trabalho</option>
+          <option value="Pessoal">Pessoal</option>
+          <option value="Estudo">Estudo</option>
+          <option value="Saúde">Saúde</option>
+          <option value="Outros">Outros</option>
+        </select>
+        <select id="priority-select" class="px-5 py-4 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl">
           <option value="high">Alta</option>
           <option value="medium">Média</option>
           <option value="low">Baixa</option>
         </select>
-        <select id="sort-select" class="px-6 py-3 bg-white dark:bg-zinc-900 border rounded-3xl">
-          <option value="newest">Mais recentes</option>
-          <option value="oldest">Mais antigas</option>
-          <option value="priority">Prioridade</option>
-          <option value="title">Alfabética</option>
-        </select>
-      </div>
+        <button type="submit" class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl shadow-lg transition active:scale-95">
+          Adicionar
+        </button>
+      </form>
     </div>
 
-    <input id="search-input" placeholder="🔍 Buscar tarefas..." class="w-full px-6 py-5 bg-white dark:bg-zinc-900 border rounded-3xl mb-8">
+    <!-- Filtros -->
+    <div class="flex flex-wrap gap-4 mb-8">
+      <select id="filter-priority" class="px-5 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl">
+        <option value="">Todas prioridades</option>
+        <option value="high">Alta</option>
+        <option value="medium">Média</option>
+        <option value="low">Baixa</option>
+      </select>
+      <select id="filter-category" class="px-5 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl">
+        <option value="">Todas categorias</option>
+      </select>
+      <select id="sort-select" class="px-5 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl">
+        <option value="newest">Mais recentes</option>
+        <option value="oldest">Mais antigas</option>
+        <option value="priority">Prioridade</option>
+        <option value="title">Alfabética</option>
+      </select>
+      <button id="clear-completed" class="px-5 py-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-xl hover:bg-red-200 dark:hover:bg-red-900/50 transition">
+        Limpar concluídas
+      </button>
+    </div>
 
     <!-- Lista de tarefas -->
     <div id="task-list" class="space-y-4 min-h-[400px]"></div>
-  </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden text-center py-20">
+      <p class="text-7xl mb-6">📭</p>
+      <h2 class="text-2xl font-semibold text-zinc-400 dark:text-zinc-600">Nenhuma tarefa ainda</h2>
+      <p class="text-zinc-500 dark:text-zinc-600 mt-2">Adicione sua primeira tarefa acima!</p>
+    </div>
+  </main>
 
   <!-- Modal de edição -->
-  <div id="edit-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div class="bg-white dark:bg-zinc-900 rounded-3xl p-8 w-full max-w-md">
-      <!-- conteúdo do modal -->
+  <div id="edit-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div class="modal-content bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+      <div class="p-6 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center">
+        <h2 class="text-xl font-semibold">Editar Tarefa</h2>
+        <button id="close-modal" class="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 text-2xl">×</button>
+      </div>
+      <form id="edit-form" class="p-6 space-y-5">
+        <input id="edit-title" type="text" required class="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+        <select id="edit-category" class="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl">
+          <!-- preenchido dinamicamente -->
+        </select>
+        <select id="edit-priority" class="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-xl">
+          <option value="high">Alta</option>
+          <option value="medium">Média</option>
+          <option value="low">Baixa</option>
+        </select>
+        <div class="flex justify-end gap-3">
+          <button type="button" id="cancel-edit" class="px-6 py-3 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-xl transition">Cancelar</button>
+          <button type="submit" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition">Salvar</button>
+        </div>
+      </form>
     </div>
   </div>
 
   <!-- Toast -->
-  <div id="toast" class="hidden fixed bottom-6 right-6 bg-zinc-900 text-white px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3"></div>
+  <div id="toast" class="hidden fixed bottom-6 right-6 px-6 py-4 rounded-2xl shadow-2xl text-white flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0"></div>
 
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
