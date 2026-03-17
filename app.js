@@ -1,7 +1,3 @@
-// ================================================
-// PULSETASKS – Versão FINAL (Tudo corrigido e melhorado)
-// ================================================
-
 const translations = {
   es: {
     appTitle: "PulseTasks • Gestor de Tareas",
@@ -17,9 +13,10 @@ const translations = {
     themeLight: "Claro",
     toastAdded: "Tarea añadida con éxito",
     clearCompleted: "Limpiar completadas",
+    markAllCompleted: "Marcar todas como completadas",
     confirmDelete: "¿Eliminar esta tarea?",
     confirmClear: "¿Limpiar todas las tareas completadas?",
-    // Categorias – chave = value exato do <option> no HTML
+    confirmMarkAll: "¿Marcar todas las tareas como completadas?",
     Trabajo: "Trabajo",
     Personal: "Personal",
     Estudio: "Estudio",
@@ -40,8 +37,10 @@ const translations = {
     themeLight: "Claro",
     toastAdded: "Tarefa adicionada com sucesso",
     clearCompleted: "Limpar concluídas",
+    markAllCompleted: "Marcar todas como concluídas",
     confirmDelete: "Deseja excluir esta tarefa?",
     confirmClear: "Limpar todas as tarefas concluídas?",
+    confirmMarkAll: "Marcar todas as tarefas como concluídas?",
     Trabajo: "Trabalho",
     Personal: "Pessoal",
     Estudio: "Estudo",
@@ -62,8 +61,10 @@ const translations = {
     themeLight: "Light Mode",
     toastAdded: "Task added successfully",
     clearCompleted: "Clear completed",
+    markAllCompleted: "Mark all as completed",
     confirmDelete: "Delete this task?",
     confirmClear: "Clear all completed tasks?",
+    confirmMarkAll: "Mark all tasks as completed?",
     Trabajo: "Work",
     Personal: "Personal",
     Estudio: "Study",
@@ -74,13 +75,12 @@ const translations = {
 
 let currentLang = localStorage.getItem('lang') || 'es';
 let tasks = [];
+let filter = { priority: '', category: '', status: '' };
 
-// Função de tradução
 function t(key) {
   return translations[currentLang][key] || key;
 }
 
-// Atualiza todos os textos fixos e dinâmicos
 function applyLanguage() {
   document.getElementById('app-title').textContent = t('appTitle');
   document.getElementById('task-input').placeholder = t('taskPlaceholder');
@@ -88,16 +88,12 @@ function applyLanguage() {
   document.getElementById('empty-title').textContent = t('emptyTitle');
   document.getElementById('empty-message').textContent = t('emptyMessage');
   document.getElementById('clear-completed').textContent = t('clearCompleted');
+  document.getElementById('mark-all-completed').textContent = t('markAllCompleted');
 
-  // Prioridades no select
-  document.querySelector('#priority-select option[value="high"]').textContent = t('priorityHigh');
-  document.querySelector('#priority-select option[value="medium"]').textContent = t('priorityMedium');
-  document.querySelector('#priority-select option[value="low"]').textContent = t('priorityLow');
-
-  renderTasks(); // atualiza cards
+  renderTasks();
+  updateStats();
 }
 
-// Alterna modo escuro
 function toggleTheme() {
   const isDark = document.documentElement.classList.toggle('dark');
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -105,7 +101,27 @@ function toggleTheme() {
   document.getElementById('theme-text').textContent = isDark ? t('themeLight') : t('themeDark');
 }
 
-// Adicionar tarefa
+function updateStats() {
+  const total = tasks.length;
+  const completed = tasks.filter(t => t.completed).length;
+  const pending = total - completed;
+
+  document.getElementById('stats').innerHTML = `
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-md text-center">
+      <p class="text-sm text-zinc-500">${t('totalTasks') || 'Total'}</p>
+      <p class="text-4xl font-bold text-indigo-600">${total}</p>
+    </div>
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-md text-center">
+      <p class="text-sm text-green-600">${t('completedTasks') || 'Completadas'}</p>
+      <p class="text-4xl font-bold text-green-600">${completed}</p>
+    </div>
+    <div class="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-md text-center">
+      <p class="text-sm text-amber-600">${t('pendingTasks') || 'Pendentes'}</p>
+      <p class="text-4xl font-bold text-amber-600">${pending}</p>
+    </div>
+  `;
+}
+
 document.getElementById('task-form').addEventListener('submit', e => {
   e.preventDefault();
   const title = document.getElementById('task-input').value.trim();
@@ -121,58 +137,59 @@ document.getElementById('task-form').addEventListener('submit', e => {
 
   localStorage.setItem('tasks', JSON.stringify(tasks));
   renderTasks();
+  updateStats();
   e.target.reset();
 });
 
-// Renderiza tarefas
 function renderTasks() {
   const container = document.getElementById('task-list');
   container.innerHTML = '';
 
-  if (tasks.length === 0) {
+  let filtered = tasks.filter(task => {
+    const matchPriority = !filter.priority || task.priority === filter.priority;
+    const matchCategory = !filter.category || task.category === filter.category;
+    const matchStatus = !filter.status || (filter.status === 'completed' ? task.completed : !task.completed);
+    return matchPriority && matchCategory && matchStatus;
+  });
+
+  if (filtered.length === 0) {
     document.getElementById('empty-state').classList.remove('hidden');
     return;
   }
 
   document.getElementById('empty-state').classList.add('hidden');
 
-  tasks.forEach(task => {
+  filtered.forEach(task => {
     const div = document.createElement('div');
     const prioText = t(`priority${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}`);
-
-    // Categoria traduzida usando o value original
     const catText = t(task.category);
 
     div.className = `flex items-center gap-6 p-7 bg-white dark:bg-zinc-900 rounded-3xl shadow-md border border-zinc-200 dark:border-zinc-800 hover:shadow-xl hover:-translate-y-1 transition-all duration-300`;
     div.innerHTML = `
       <input type="checkbox" ${task.completed ? 'checked' : ''} class="w-6 h-6 accent-indigo-600">
       <div class="flex-1">
-        <p class="text-xl font-medium ${task.completed ? 'line-through text-zinc-500 dark:text-zinc-400' : ''}">
-          ${task.title}
-        </p>
+        <p class="text-xl font-medium ${task.completed ? 'line-through text-zinc-500' : ''}">${task.title}</p>
         <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">${catText}</p>
       </div>
       <span class="px-7 py-2.5 text-sm font-semibold rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">
         ${prioText}
       </span>
-      <button class="delete-btn text-red-500 hover:text-red-700 px-4 py-2 text-2xl transition-colors" aria-label="Eliminar tarea">
-        🗑️
-      </button>
+      <button class="delete-btn text-red-500 hover:text-red-700 px-4 py-2 text-2xl transition-colors">🗑️</button>
     `;
 
-    // Checkbox: risco no título ao marcar como concluída
-    div.querySelector('input[type="checkbox"]').addEventListener('change', () => {
+    div.querySelector('input').addEventListener('change', () => {
       task.completed = !task.completed;
       localStorage.setItem('tasks', JSON.stringify(tasks));
-      renderTasks(); // re-renderiza para mostrar o risco
+      renderTasks();
+      updateStats();
     });
 
-    // Excluir tarefa individual
     div.querySelector('.delete-btn').addEventListener('click', () => {
       if (confirm(t('confirmDelete'))) {
         tasks = tasks.filter(t => t.id !== task.id);
         localStorage.setItem('tasks', JSON.stringify(tasks));
         renderTasks();
+        updateStats();
       }
     });
 
@@ -180,7 +197,6 @@ function renderTasks() {
   });
 }
 
-// Inicialização
 function init() {
   document.getElementById('lang-select').value = currentLang;
   applyLanguage();
@@ -193,6 +209,7 @@ function init() {
   if (saved) tasks = JSON.parse(saved);
 
   renderTasks();
+  updateStats();
 
   document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 
@@ -202,12 +219,21 @@ function init() {
     applyLanguage();
   });
 
-  // Botão Limpiar completadas – agora com confirmação e atualização imediata
   document.getElementById('clear-completed').addEventListener('click', () => {
     if (confirm(t('confirmClear'))) {
       tasks = tasks.filter(t => !t.completed);
       localStorage.setItem('tasks', JSON.stringify(tasks));
       renderTasks();
+      updateStats();
+    }
+  });
+
+  document.getElementById('mark-all-completed').addEventListener('click', () => {
+    if (confirm(t('confirmMarkAll'))) {
+      tasks.forEach(t => t.completed = true);
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      renderTasks();
+      updateStats();
     }
   });
 }
