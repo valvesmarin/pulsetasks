@@ -1,3 +1,7 @@
+// ================================================
+// PULSETASKS – Versão FINAL (Tudo corrigido e melhorado)
+// ================================================
+
 const translations = {
   es: {
     appTitle: "PulseTasks • Gestor de Tareas",
@@ -15,6 +19,7 @@ const translations = {
     clearCompleted: "Limpiar completadas",
     confirmDelete: "¿Eliminar esta tarea?",
     confirmClear: "¿Limpiar todas las tareas completadas?",
+    // Categorias – chave = value exato do <option> no HTML
     Trabajo: "Trabajo",
     Personal: "Personal",
     Estudio: "Estudio",
@@ -89,7 +94,7 @@ function applyLanguage() {
   document.querySelector('#priority-select option[value="medium"]').textContent = t('priorityMedium');
   document.querySelector('#priority-select option[value="low"]').textContent = t('priorityLow');
 
-  renderTasks(); 
+  renderTasks(); // atualiza cards
 }
 
 // Alterna modo escuro
@@ -197,7 +202,7 @@ function init() {
     applyLanguage();
   });
 
-  // Botão Limpiar completadas 
+  // Botão Limpiar completadas – agora com confirmação e atualização imediata
   document.getElementById('clear-completed').addEventListener('click', () => {
     if (confirm(t('confirmClear'))) {
       tasks = tasks.filter(t => !t.completed);
