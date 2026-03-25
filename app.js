@@ -14,13 +14,11 @@ const translations = {
     emptyMessage: "¡Añade tu primera tarea arriba!",
     themeDark: "Modo Oscuro",
     themeLight: "Claro",
-    toastAdded: "Tarea añadida con éxito",
     clearCompleted: "Limpiar completadas",
     markAllCompleted: "Marcar todas como completadas",
     confirmDelete: "¿Eliminar esta tarea?",
     confirmClear: "¿Limpiar todas las tareas completadas?",
     confirmMarkAll: "¿Marcar todas las tareas como completadas?",
-    // Categorias - chave = value exato do <option>
     Trabajo: "Trabajo",
     Personal: "Personal",
     Estudio: "Estudio",
@@ -42,7 +40,6 @@ const translations = {
     emptyMessage: "Adicione sua primeira tarefa acima!",
     themeDark: "Modo Escuro",
     themeLight: "Claro",
-    toastAdded: "Tarefa adicionada com sucesso",
     clearCompleted: "Limpar concluídas",
     markAllCompleted: "Marcar todas como concluídas",
     confirmDelete: "Deseja excluir esta tarefa?",
@@ -69,7 +66,6 @@ const translations = {
     emptyMessage: "Add your first task above!",
     themeDark: "Dark Mode",
     themeLight: "Light Mode",
-    toastAdded: "Task added successfully",
     clearCompleted: "Clear completed",
     markAllCompleted: "Mark all as completed",
     confirmDelete: "Delete this task?",
@@ -91,6 +87,7 @@ function t(key) {
   return translations[currentLang][key] || key;
 }
 
+// Atualiza tudo quando muda o idioma
 function applyLanguage() {
   document.getElementById('app-title').textContent = t('appTitle');
   document.getElementById('task-input').placeholder = t('taskPlaceholder');
@@ -100,8 +97,36 @@ function applyLanguage() {
   document.getElementById('clear-completed').textContent = t('clearCompleted');
   document.getElementById('mark-all-completed').textContent = t('markAllCompleted');
 
+  // Atualiza opções do formulário
+  document.querySelector('#priority-select option[value="high"]').textContent = t('priorityHigh');
+  document.querySelector('#priority-select option[value="medium"]').textContent = t('priorityMedium');
+  document.querySelector('#priority-select option[value="low"]').textContent = t('priorityLow');
+
+  // Atualiza opções dos filtros
+  populateFilterOptions();
+
   renderTasks();
   updateStats();
+}
+
+// Preenche os selects de filtro com traduções
+function populateFilterOptions() {
+  const filterPriority = document.getElementById('filter-priority');
+  const filterCategory = document.getElementById('filter-category');
+
+  // Prioridades
+  filterPriority.innerHTML = `<option value="">${t('allPriorities')}</option>
+    <option value="high">${t('priorityHigh')}</option>
+    <option value="medium">${t('priorityMedium')}</option>
+    <option value="low">${t('priorityLow')}</option>`;
+
+  // Categorias
+  filterCategory.innerHTML = `<option value="">Todas las categorías</option>
+    <option value="Trabajo">${t('Trabajo')}</option>
+    <option value="Personal">${t('Personal')}</option>
+    <option value="Estudio">${t('Estudio')}</option>
+    <option value="Salud">${t('Salud')}</option>
+    <option value="Otros">${t('Otros')}</option>`;
 }
 
 function toggleTheme() {
@@ -172,7 +197,7 @@ function renderTasks() {
   filtered.forEach(task => {
     const div = document.createElement('div');
     const prioText = t(`priority${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}`);
-    const catText = t(task.category);   // ← Aqui está a correção principal
+    const catText = t(task.category);
 
     div.className = `flex items-center gap-6 p-7 bg-white dark:bg-zinc-900 rounded-3xl shadow-md border border-zinc-200 dark:border-zinc-800 hover:shadow-xl hover:-translate-y-1 transition-all duration-300`;
     div.innerHTML = `
@@ -221,12 +246,29 @@ function init() {
   renderTasks();
   updateStats();
 
+  // Eventos
   document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 
   document.getElementById('lang-select').addEventListener('change', e => {
     currentLang = e.target.value;
     localStorage.setItem('lang', currentLang);
     applyLanguage();
+  });
+
+  // Filtros
+  document.getElementById('filter-priority').addEventListener('change', e => {
+    filter.priority = e.target.value;
+    renderTasks();
+  });
+
+  document.getElementById('filter-category').addEventListener('change', e => {
+    filter.category = e.target.value;
+    renderTasks();
+  });
+
+  document.getElementById('filter-status').addEventListener('change', e => {
+    filter.status = e.target.value;
+    renderTasks();
   });
 
   document.getElementById('clear-completed').addEventListener('click', () => {
