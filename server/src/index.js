@@ -1,4 +1,3 @@
-// server/src/index.js
 import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
@@ -19,10 +18,10 @@ const swaggerOptions = {
       description: 'API RESTful do gerenciador de tarefas PulseTasks',
     },
     servers: [
-      { url: `http://localhost:${PORT}` }
+      { url: `https://pulsetasks-kedk.onrender.com` }
     ],
   },
-  apis: ['./src/routes/*.js'], // onde o Swagger vai ler os comentários
+  apis: ['./src/routes/*.js'],
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
@@ -30,6 +29,16 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 // ==================== MIDDLEWARES ====================
 app.use(cors());
 app.use(express.json());
+
+// ==================== ROTA RAIZ (para não dar Cannot GET /) ====================
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>🚀 PulseTasks API - Online</h1>
+    <p>A API está funcionando corretamente.</p>
+    <p><strong>Documentação Swagger:</strong> <a href="/api-docs" target="_blank">/api-docs</a></p>
+    <p><strong>Endpoint de tarefas:</strong> /api/v1/tasks</p>
+  `);
+});
 
 // ==================== DOCUMENTAÇÃO SWAGGER ====================
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
@@ -49,6 +58,6 @@ app.use((err, req, res, next) => {
 // ==================== INICIAR SERVIDOR ====================
 app.listen(PORT, () => {
   console.log(`🚀 Servidor PulseTasks rodando em http://localhost:${PORT}`);
-  console.log(`📡 API disponível em http://localhost:${PORT}/api/v1/tasks`);
-  console.log(`📘 Documentação Swagger: http://localhost:${PORT}/api-docs`);
+  console.log(`📡 API disponível em https://pulsetasks-kedk.onrender.com/api/v1/tasks`);
+  console.log(`📘 Documentação Swagger: https://pulsetasks-kedk.onrender.com/api-docs`);
 });
