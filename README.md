@@ -27,18 +27,23 @@ Una aplicación full-stack para gestionar tareas con diseño moderno, modo oscur
 **Frontend:**
 
 HTML5, CSS3, Tailwind CSS v4
+
 JavaScript vanilla (ES6+)
+
 SortableJS (Drag & Drop)
 
 **Backend:**
 
-Node.js + Express
+Node.js + Express 
+
 MongoDB (Atlas) – próximamente
+
 CORS y Swagger (documentación)
 
 **Deploy:**
 
-Backend: Render.com
+Backend: Render.com 
+
 Frontend: Vercel (próximamente)
 
 ---
